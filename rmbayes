@@ -4,10 +4,10 @@
 # Usage: rmbayes [-f]
 # Options: [-f] deletes files without asking (very dangerous!)
 # By: Johan Nylander
-# Version: 10/02/2013 03:36:45 PM
+# Version: 03/19/2014 10:07:19 PM
 
 SOFTWARE="MrBayes"
-SOFTWAREFILES="*.p *.t *.trprobs *.parts *.con *.sumt *.sump *.stat *.mcmc hmean.txt *.chp *.log log.* out.* *.ckp  *.ckp~  temp.comp.dists *.lstat *.vstat *.tstat *.pstat *.ss *.con.tre *.mstat"
+SOFTWAREFILES="*.p *.p~ *.t *.t~ *.trprobs *.parts *.con *.sumt *.sump *.stat *.mcmc *.mcmc~ hmean.txt *.chp *.log log.* out.* *.ckp  *.ckp~  temp.comp.dists *.lstat *.vstat *.tstat *.pstat *.ss *.con.tre *.mstat"
 
 if [ -n "$1" ]
     then
