@@ -4,19 +4,29 @@
 # Description: Removes files produced by phylobayes or pbmpi
 # Usage: rmphylobayes [-f][-h][-v]
 # By: Johan Nylander
-# Last modified: tor maj 15, 2025  02:24
+# Last modified: tor maj 15, 2025  02:46
 
 SOFTWARE="phylobayes"
 
 SOFTWAREFILES=(
   "*.bplist"
+  "*.chain *.log"
   "*.contdiff"
+  "*.currenttree"
   "*.modeprofiles"
+  "*.monitor"
   "*.param"
+  "*.run"
   "*.statent"
   "*.trace"
   "*.tree"
   "*.treelist"
+  "*_sample.calib"
+  "*_sample.chronogram"
+  "*_sample.dates"
+  "*_sample.hyperparam"
+  "*_sample.labels"
+  "*_sample.tre"
 )
 
 show_version() {
