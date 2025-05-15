@@ -1,54 +1,140 @@
 #!/bin/bash
-# rmbayes
+
+# Name: rmbayes
 # Description: Removes files produced by MrBayes
-# Usage: rmbayes [-f]
-# Options: [-f] deletes files without asking (very dangerous!)
+# Usage: rmbayes [-f][-h][-v]
 # By: Johan Nylander
-# Version: 03/19/2014 10:07:19 PM
+# Last modified: tor maj 15, 2025  02:09
 
 SOFTWARE="MrBayes"
-SOFTWAREFILES="*.p *.p~ *.t *.t~ *.trprobs *.parts *.con *.sumt *.sump *.stat *.mcmc *.mcmc~ hmean.txt *.chp *.log log.* out.* *.ckp  *.ckp~  temp.comp.dists *.lstat *.vstat *.tstat *.pstat *.ss *.con.tre *.mstat"
 
-if [ -n "$1" ]
-    then
-    if [ "$1" = "-f" ]
-    then
-       echo
-       rm -rvf $SOFTWAREFILES
-       echo
-    fi
+SOFTWAREFILES=(
+  "*.ckp"
+  "*.ckp~"
+  "*.con"
+  "*.con.tre"
+  "*.log"
+  "*.lstat"
+  "*.mcmc"
+  "*.mcmc~"
+  "*.mstat"
+  "*.p"
+  "*.parts"
+  "*.pstat"
+  "*.p~"
+  "*.ss"
+  "*.stat"
+  "*.sump"
+  "*.sumt"
+  "*.t"
+  "*.trprobs"
+  "*.tstat"
+  "*.t~"
+  "*.vstat"
+  "hmean.txt"
+  "temp.comp.dists"
+)
+
+show_version() {
+  echo "0.1"
+}
+
+show_help() {
+  echo ""
+  echo "NAME"
+  echo "    rmbayes"
+  echo ""
+  echo "SYNOPSIS"
+  echo "    $0 [-f][-h][-v]"
+  echo ""
+  echo "DESCRIPTION"
+  echo "    Script removes output files from the software $SOFTWARE in the current"
+  echo "    working directory. Default (no options) is to be interactive."
+  echo ""
+  echo "OPTIONS"
+  echo "    -f, --force     delete files found without asking"
+  echo "    -h, --help      print this help text"
+  echo "    -v, --version   print version"
+  echo ""
+  echo "AUTHOR"
+  echo "    Johan Nylander"
+  echo ""
+  echo "SEE ALSO"
+  echo "    <https://github.com/nylander/remove_mcmc_output>"
+  echo ""
+}
+
+force=0
+while :; do
+  case $1 in
+    -h|-\?|--help)
+      show_help
+      exit
+      ;;
+    -v|--version)
+      show_version
+      exit
+      ;;
+    -f|--force)
+      force=1
+      ;;
+    -?*)
+      printf 'WARN: Unknown option: %s\n' "$1" >&2
+      show_help
+      exit
+      ;;
+    *)
+      break
+  esac
+  shift
+done
+
+FILELIST=()
+for f in "${SOFTWAREFILES[@]}" ; do
+  readarray -d '' FF < <(find . -type f -name "$f" -print0)
+  if (( ${#FF[@]} )) ; then
+    for h in "${FF[@]}" ; do
+      FILELIST+=("$h")
+    done
+  fi
+done
+
+if [ ${#FILELIST[@]} -eq 0 ] ; then
+  echo ""
+  echo "Didn't find any $SOFTWARE files"
+  echo "Nothing to be done."
+  exit
+fi
+
+if [ "$force" = 1 ] ; then
+  for ff in "${FILELIST[@]}" ; do
+    rm -rvf "$ff"
+  done
 else
-    echo
-    echo "Checking for MrBayes output using ls:"
-    echo
-    FILELIST=`ls $SOFTWAREFILES`
-    if [ "$FILELIST" = "" ]
-    then
-        echo
-        echo "Didn't find any $SOFTWARE files"
-        echo
-    else
-        echo
-        echo "Found the following output from $SOFTWARE"
-        echo
-        for ff in $FILELIST
-        do
-            echo $ff
-        done
-        echo
-        echo -n "Do you want to delete these files [y/n]? "
-        read ANSWER
-        if [ "$ANSWER" = "y" ]
-        then
-            echo
-            for ff in $FILELIST
-            do
-                rm -rvf $ff
-            done
-        else
-            echo
-            echo "OK, no files deleted"
-        fi
-    fi
+  echo "Found the following output from $SOFTWARE"
+  echo ""
+  for ff in "${FILELIST[@]}" ; do
+    echo "$ff"
+  done
+  echo ""
+  echo -n "Do you want to delete these files [y/n]? "
+  read -r ANSWER
+  if [ "${ANSWER,,}" = "y" ] ; then
+    echo ""
+    for ff in "${FILELIST[@]}" ; do
+      rm -rvf "$ff"
+    done
+    echo ""
+  elif [ "${ANSWER,,}" = "n" ] ; then
+    echo ""
+    echo "OK, no files deleted"
+    echo ""
+  else
+    echo ""
+    echo "y or n? Not sure ($ANSWER) so exiting."
+    echo ""
+    show_help
+    exit
+  fi
 fi
 
